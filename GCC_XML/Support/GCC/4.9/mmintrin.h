@@ -313,10 +313,7 @@ _m_paddd (__m64 __m1, __m64 __m2)
 #endif /* __SSE2__ */
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_add_si64 (__m64 __m1, __m64 __m2)
-{
-  return (__m64) __builtin_ia32_paddq ((__v1di)__m1, (__v1di)__m2);
-}
+_mm_add_si64 (__m64 __m1, __m64 __m2);
 #ifdef __DISABLE_SSE2__
 #undef __DISABLE_SSE2__
 #pragma GCC pop_options
@@ -425,10 +422,7 @@ _m_psubd (__m64 __m1, __m64 __m2)
 #endif /* __SSE2__ */
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sub_si64 (__m64 __m1, __m64 __m2)
-{
-  return (__m64) __builtin_ia32_psubq ((__v1di)__m1, (__v1di)__m2);
-}
+_mm_sub_si64 (__m64 __m1, __m64 __m2);
 #ifdef __DISABLE_SSE2__
 #undef __DISABLE_SSE2__
 #pragma GCC pop_options
@@ -535,10 +529,7 @@ _m_pmullw (__m64 __m1, __m64 __m2)
 
 /* Shift four 16-bit values in M left by COUNT.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sll_pi16 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_psllw ((__v4hi)__m, (__v4hi)__count);
-}
+_mm_sll_pi16 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psllw (__m64 __m, __m64 __count)
@@ -547,10 +538,7 @@ _m_psllw (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_slli_pi16 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_psllwi ((__v4hi)__m, __count);
-}
+_mm_slli_pi16 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psllwi (__m64 __m, int __count)
@@ -560,10 +548,7 @@ _m_psllwi (__m64 __m, int __count)
 
 /* Shift two 32-bit values in M left by COUNT.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sll_pi32 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_pslld ((__v2si)__m, (__v2si)__count);
-}
+_mm_sll_pi32 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_pslld (__m64 __m, __m64 __count)
@@ -572,10 +557,7 @@ _m_pslld (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_slli_pi32 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_pslldi ((__v2si)__m, __count);
-}
+_mm_slli_pi32 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_pslldi (__m64 __m, int __count)
@@ -585,10 +567,7 @@ _m_pslldi (__m64 __m, int __count)
 
 /* Shift the 64-bit value in M left by COUNT.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sll_si64 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_psllq ((__v1di)__m, (__v1di)__count);
-}
+_mm_sll_si64 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psllq (__m64 __m, __m64 __count)
@@ -597,10 +576,7 @@ _m_psllq (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_slli_si64 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_psllqi ((__v1di)__m, __count);
-}
+_mm_slli_si64 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psllqi (__m64 __m, int __count)
@@ -610,10 +586,7 @@ _m_psllqi (__m64 __m, int __count)
 
 /* Shift four 16-bit values in M right by COUNT; shift in the sign bit.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sra_pi16 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_psraw ((__v4hi)__m, (__v4hi)__count);
-}
+_mm_sra_pi16 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psraw (__m64 __m, __m64 __count)
@@ -622,10 +595,7 @@ _m_psraw (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srai_pi16 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_psrawi ((__v4hi)__m, __count);
-}
+_mm_srai_pi16 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrawi (__m64 __m, int __count)
@@ -635,10 +605,7 @@ _m_psrawi (__m64 __m, int __count)
 
 /* Shift two 32-bit values in M right by COUNT; shift in the sign bit.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sra_pi32 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_psrad ((__v2si)__m, (__v2si)__count);
-}
+_mm_sra_pi32 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrad (__m64 __m, __m64 __count)
@@ -647,10 +614,7 @@ _m_psrad (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srai_pi32 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_psradi ((__v2si)__m, __count);
-}
+_mm_srai_pi32 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psradi (__m64 __m, int __count)
@@ -660,10 +624,7 @@ _m_psradi (__m64 __m, int __count)
 
 /* Shift four 16-bit values in M right by COUNT; shift in zeros.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srl_pi16 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_psrlw ((__v4hi)__m, (__v4hi)__count);
-}
+_mm_srl_pi16 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrlw (__m64 __m, __m64 __count)
@@ -672,10 +633,7 @@ _m_psrlw (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srli_pi16 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_psrlwi ((__v4hi)__m, __count);
-}
+_mm_srli_pi16 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrlwi (__m64 __m, int __count)
@@ -685,10 +643,7 @@ _m_psrlwi (__m64 __m, int __count)
 
 /* Shift two 32-bit values in M right by COUNT; shift in zeros.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srl_pi32 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_psrld ((__v2si)__m, (__v2si)__count);
-}
+_mm_srl_pi32 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrld (__m64 __m, __m64 __count)
@@ -697,10 +652,7 @@ _m_psrld (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srli_pi32 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_psrldi ((__v2si)__m, __count);
-}
+_mm_srli_pi32 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrldi (__m64 __m, int __count)
@@ -710,10 +662,7 @@ _m_psrldi (__m64 __m, int __count)
 
 /* Shift the 64-bit value in M left by COUNT; shift in zeros.  */
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srl_si64 (__m64 __m, __m64 __count)
-{
-  return (__m64) __builtin_ia32_psrlq ((__v1di)__m, (__v1di)__count);
-}
+_mm_srl_si64 (__m64 __m, __m64 __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrlq (__m64 __m, __m64 __count)
@@ -722,10 +671,7 @@ _m_psrlq (__m64 __m, __m64 __count)
 }
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_srli_si64 (__m64 __m, int __count)
-{
-  return (__m64) __builtin_ia32_psrlqi ((__v1di)__m, __count);
-}
+_mm_srli_si64 (__m64 __m, int __count);
 
 extern __inline __m64 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _m_psrlqi (__m64 __m, int __count)

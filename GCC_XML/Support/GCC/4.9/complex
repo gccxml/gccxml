@@ -1093,11 +1093,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
       imag(float __val) { __imag__ _M_value = __val; }
 
       complex&
-      operator=(float __f)
-      {
-	_M_value = __f;
-	return *this;
-      }
+      operator=(float __f);
 
       complex&
       operator+=(float __f)
@@ -1244,11 +1240,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
       imag(double __val) { __imag__ _M_value = __val; }
 
       complex&
-      operator=(double __d)
-      {
-	_M_value = __d;
-	return *this;
-      }
+      operator=(double __d);
 
       complex&
       operator+=(double __d)
@@ -1396,11 +1388,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
       imag(long double __val) { __imag__ _M_value = __val; }
 
       complex&
-      operator=(long double __r)
-      {
-	_M_value = __r;
-	return *this;
-      }
+      operator=(long double __r);
 
       complex&
       operator+=(long double __r)
