@@ -721,7 +721,7 @@ ENDIF(NOT GCC_EXECUTED_PLATFORM_SCRIPT)
 IF(EXISTS "${GCCCONFIG_BINARY_DIR}/gcc_platform.cmake")
   INCLUDE("${GCCCONFIG_BINARY_DIR}/gcc_platform.cmake")
 ELSE(EXISTS "${GCCCONFIG_BINARY_DIR}/gcc_platform.cmake")
-  MESSAGE(FATAL_ERROR "Cannot find gcc_platform.cmake.")
+  MESSAGE(FATAL_ERROR "Cannot find '${GCCCONFIG_BINARY_DIR}/gcc_platform.cmake'")
 ENDIF(EXISTS "${GCCCONFIG_BINARY_DIR}/gcc_platform.cmake")
 
 IF(extra_modes)
