@@ -1082,12 +1082,9 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
 	  typename iterator_traits<_InputIterator>::value_type>)
 
       typename iterator_traits<_InputIterator>::value_type __value = *__first;
-      __decltype(__gnu_cxx::__ops::__iter_comp_val(__binary_pred))
-	__rebound_pred
-	= __gnu_cxx::__ops::__iter_comp_val(__binary_pred);
       *__result = __value;
       while (++__first != __last)
-	if (!__rebound_pred(__first, __value))
+	if (!__binary_pred(__first, __value))
 	  {
 	    __value = *__first;
 	    *++__result = __value;
