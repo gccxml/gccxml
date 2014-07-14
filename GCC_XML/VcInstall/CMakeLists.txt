@@ -15,11 +15,10 @@ INSTALL(TARGETS ${VCCONFIG_TARGET}
 # Create the MSVC support directories.
 # This will just execute on every build because we don't know
 # what files and directories it may create.
-GET_TARGET_PROPERTY(GCCXML_VCCONFIG_EXE ${VCCONFIG_TARGET} LOCATION)
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCCXML_BINARY_DIR}/vcInstall_stamp.c
 
-  COMMAND ${GCCXML_VCCONFIG_EXE}
+  COMMAND ${VCCONFIG_TARGET}
   ${GCCXML_SOURCE_DIR}/VcInstall ${GCCXML_BINARY_DIR}/Support
   ${GCCXML_BINARY_DIR}/vcInstall_stamp.c
 
