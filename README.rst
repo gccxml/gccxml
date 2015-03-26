@@ -4,6 +4,14 @@
 GCC-XML
 =======
 
+**Note:** GCC-XML has been succeeded by `CastXML`_.
+
+.. _`CastXML`: https://github.com/CastXML/CastXML#readme
+
+------------
+Introduction
+------------
+
 This program dumps an XML description of C++ source code
 using an extension of the GCC C++ compiler.
 
