@@ -80,6 +80,5 @@ Links
 
 * GCC-XML homepage: http://www.gccxml.org
 * CMake homepage: http://www.cmake.org
-* GCC-XML mailing list: http://www.gccxml.org/mailman/listinfo/gccxml
 
 .. _homepage: http://www.gccxml.org
