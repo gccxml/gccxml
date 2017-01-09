@@ -1,0 +1,84 @@
+.. title:: GCC-XML - XML output for GCC
+
+=======
+GCC-XML
+=======
+
+**Note:** GCC-XML has been succeeded by `CastXML`_.
+
+.. _`CastXML`: https://github.com/CastXML/CastXML#readme
+
+------------
+Introduction
+------------
+
+This program dumps an XML description of C++ source code
+using an extension of the GCC C++ compiler.
+
+This document is intended as supplement to the documentation on the
+GCC-XML homepage_.  More extensive instructions may be found there.
+
+-------------
+Build/Install
+-------------
+
+The standard way to build the GCC-XML front-end is to use CMake (see
+links at bottom to get it).  CMake will generate an appropriate build
+system for your platform and compiler.  There are separate
+instructions for UNIX and Windows users.
+
+UNIX & Cygwin
+^^^^^^^^^^^^^
+
+These instructions assume that the front-end will be built
+out-of-source (recommended), but an in-source build should also work.
+The example command lines assume the current working directory is just
+above the top-level source directory (called ``gccxml``)::
+
+ $ mkdir gccxml-build
+ $ cd gccxml-build
+ $ cmake ../gccxml -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
+ $ make
+ $ make install
+
+(The "-D..." option can be left off if you want
+to use ``/usr/local`` as the installation prefix.)
+
+This will install executables called ``gccxml`` and ``gccxml_cc1plus`` in
+PREFIX/bin.  Support library files will also be placed in
+PREFIX/share/gccxml-(version).
+
+Windows
+^^^^^^^
+
+Run the CMake GUI to generate the build system for your compiler.
+Load the resulting project file and build it.  You should be able to
+run the executable directly from the build directory.  It will be
+located in ``gccxml-build/bin``, ``gccxml-build/bin/Debug``, or
+``gccxml-build/bin/Release`` depending on the build system chosen.
+
+Solaris
+^^^^^^^
+
+Sun's CC 5.8 is supported. You need modified headers to use gccxml with CC 5.8.
+You need to follow the instructions in GCC_XML/Support/Sun/README.
+
+-------
+Running
+-------
+
+Once GCC-XML has been properly configured, it can be run from the
+command line like this::
+
+ $ gccxml input.cxx -fxml=output.xml
+
+Use ``gccxml --help`` for a full list of options and configuration help.
+
+-----
+Links
+-----
+
+* GCC-XML homepage: http://www.gccxml.org
+* CMake homepage: http://www.cmake.org
+
+.. _homepage: http://www.gccxml.org
